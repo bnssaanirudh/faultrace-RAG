@@ -72,6 +72,7 @@ class RunRow(Base):
     __tablename__ = "runs"
 
     run_id = Column(String, primary_key=True)
+    experiment_id = Column(String, nullable=True)
     query_id = Column(String, nullable=False)
     pipeline_id = Column(String, nullable=False)
     provider_id = Column(String, default="deterministic")
@@ -95,6 +96,21 @@ class RunRow(Base):
     certificate_id = Column(String, nullable=True)
     certificate_hash = Column(String, nullable=True)
 
+    schema_version = Column(String, default="1.0.0")
+
+
+class ExperimentRow(Base):
+    __tablename__ = "experiments"
+
+    experiment_id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    status = Column(String, default="pending")  # pending, running, complete, complete_with_failures, cancelled
+    config_json = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    completed_at = Column(DateTime, nullable=True)
+    total_jobs = Column(Integer, default=0)
+    completed_jobs = Column(Integer, default=0)
+    failed_jobs = Column(Integer, default=0)
     schema_version = Column(String, default="1.0.0")
 
 

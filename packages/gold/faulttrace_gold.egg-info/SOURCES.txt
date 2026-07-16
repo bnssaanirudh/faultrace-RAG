@@ -1,6 +1,7 @@
 pyproject.toml
 faulttrace_gold/__init__.py
 faulttrace_gold/duckdb_engine.py
+faulttrace_gold/oracles.py
 faulttrace_gold/pandas_engine.py
 faulttrace_gold/validator.py
 faulttrace_gold.egg-info/PKG-INFO

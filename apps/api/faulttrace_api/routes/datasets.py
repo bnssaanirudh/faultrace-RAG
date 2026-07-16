@@ -109,3 +109,53 @@ async def get_missingness(snapshot_id: str) -> dict[str, Any]:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+from pydantic import BaseModel
+
+class IngestRequest(BaseModel):
+    input_path: str
+    dataset_id: str
+    license_note: str = ""
+    max_bytes_mb: int = 500
+
+@router.post("/datasets/ingest", summary="Ingest a local Amazon-style file as a snapshot")
+async def ingest_dataset(request: IngestRequest) -> dict[str, Any]:
+    from faulttrace_data.amazon_adapter import AmazonLocalAdapter
+    from faulttrace_data.snapshot import SnapshotRegistry
+    
+    settings = get_settings()
+    input_path = Path(request.input_path)
+    if not input_path.exists():
+        raise HTTPException(status_code=404, detail=f"Input file not found: {input_path}")
+        
+    output = settings.data_root / "snapshots"
+    data_root = settings.data_root
+    
+    adapter = AmazonLocalAdapter(
+        dataset_id=request.dataset_id,
+        max_bytes=request.max_bytes_mb * 1024 * 1024,
+    )
+    
+    producing_cmd = f"api: POST /api/v1/datasets/ingest --input {input_path.name}"
+    
+    try:
+        report, snapshot = adapter.ingest(
+            source_path=input_path,
+            output_root=output,
+            data_root=data_root,
+            license_note=request.license_note,
+            producing_command=producing_cmd,
+        )
+        registry_path = data_root / "manifests" / "snapshots.jsonl"
+        registry = SnapshotRegistry(registry_path)
+        registry.register(snapshot)
+        return {
+            "status": "success",
+            "snapshot_id": snapshot.snapshot_id,
+            "total_rows_read": report.total_rows_read,
+            "accepted_count": report.accepted_count,
+            "rejected_count": report.rejected_count,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

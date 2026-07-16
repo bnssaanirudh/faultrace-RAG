@@ -36,11 +36,170 @@ data_app = typer.Typer(help="Data generation and ingestion commands.")
 gold_app = typer.Typer(help="Gold engine commands.")
 query_app = typer.Typer(help="Query management commands.")
 worlds_app = typer.Typer(help="World building and verification commands.")
+experiment_app = typer.Typer(help="Controlled benchmarking and experiment commands.")
 
 app.add_typer(data_app, name="data")
 app.add_typer(gold_app, name="gold")
 app.add_typer(query_app, name="query")
 app.add_typer(worlds_app, name="worlds")
+app.add_typer(experiment_app, name="experiment")
+
+
+# =============================================================================
+# EXPERIMENT COMMANDS
+# =============================================================================
+
+@experiment_app.command("validate")
+def validate_experiment(config: Path = typer.Argument(..., help="Path to experiment config JSON")):
+    """Validate a YAML/JSON experiment specification."""
+    from faulttrace_reporting import ExperimentSpec
+    import json
+    if not config.exists():
+        typer.echo(f"[ERROR] Config file not found: {config}", err=True)
+        raise typer.Exit(1)
+    try:
+        spec = ExperimentSpec.model_validate(json.loads(config.read_text()))
+        spec.validate_compat()
+        typer.echo(f"[VALID] Configuration is valid. Config Hash: {spec.get_config_hash()}")
+    except Exception as e:
+        typer.echo(f"[ERROR] Validation failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@experiment_app.command("plan")
+def plan_experiment(config: Path = typer.Argument(..., help="Path to experiment config JSON")):
+    """Plan experiment matrix and estimate resource usage."""
+    from faulttrace_reporting import ExperimentSpec, ResumableMatrixRunner
+    import json
+    if not config.exists():
+        typer.echo(f"[ERROR] Config file not found: {config}", err=True)
+        raise typer.Exit(1)
+    try:
+        spec = ExperimentSpec.model_validate(json.loads(config.read_text()))
+        runner = ResumableMatrixRunner(spec)
+        plan = runner.dry_run()
+        typer.echo(f"--- Experiment Execution Plan ---")
+        typer.echo(f"Config Hash: {plan['config_hash']}")
+        typer.echo(f"Total Jobs to Execute: {plan['total_jobs']}")
+        typer.echo(f"Estimated Tokens Input: {plan['estimated_input_tokens']:,}")
+        typer.echo(f"Estimated Tokens Output: {plan['estimated_output_tokens']:,}")
+        typer.echo(f"Estimated Token Cost: ${plan['estimated_cost_usd']:.4f}")
+    except Exception as e:
+        typer.echo(f"[ERROR] Planning failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@experiment_app.command("run")
+def run_experiment(config: Path = typer.Argument(..., help="Path to experiment config JSON")):
+    """Execute the experiment matrix runs."""
+    from faulttrace_reporting import ExperimentSpec, ResumableMatrixRunner
+    import json
+    if not config.exists():
+        typer.echo(f"[ERROR] Config file not found: {config}", err=True)
+        raise typer.Exit(1)
+    try:
+        spec = ExperimentSpec.model_validate(json.loads(config.read_text()))
+        runner = ResumableMatrixRunner(spec)
+        typer.echo(f"Running experiment matrix hash: {runner.config_hash}...")
+        result = runner.run()
+        typer.echo(f"Experiment matrix finished with status: {result['status']}")
+        typer.echo(f"  Completed: {result['completed']}")
+        typer.echo(f"  Failed: {result['failed']}")
+        typer.echo(f"  Skipped (cached): {result['skipped']}")
+    except Exception as e:
+        typer.echo(f"[ERROR] Execution failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@experiment_app.command("resume")
+def resume_experiment(experiment_id: str = typer.Argument(..., help="Experiment ID (Config Hash) to resume")):
+    """Resume a previously interrupted experiment matrix."""
+    from faulttrace_api.database import ExperimentRow, get_session_factory
+    from faulttrace_reporting import ExperimentSpec, ResumableMatrixRunner
+    import json
+    
+    db = get_session_factory()()
+    exp = db.query(ExperimentRow).filter(ExperimentRow.experiment_id == experiment_id).first()
+    if not exp:
+        typer.echo(f"[ERROR] Experiment '{experiment_id}' not found in registry database", err=True)
+        raise typer.Exit(1)
+
+    try:
+        spec = ExperimentSpec.model_validate(json.loads(exp.config_json))
+        runner = ResumableMatrixRunner(spec, db)
+        typer.echo(f"Resuming experiment matrix: {experiment_id}...")
+        result = runner.run()
+        typer.echo(f"Resumed experiment matrix completed: {result['status']}")
+    except Exception as e:
+        typer.echo(f"[ERROR] Resume failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@experiment_app.command("summarize")
+def summarize_experiment(experiment_id: str = typer.Argument(..., help="Experiment ID to summarize")):
+    """Compute aggregate metrics, confidence intervals, compile reports & export bundles."""
+    import pandas as pd
+    from faulttrace_api.database import ExperimentRow, RunRow, QueryRow, WorldRow, get_session_factory
+    from faulttrace_reporting import (
+        ExperimentSpec, MetricsComputer, FigureGenerator, ReportGenerator, ReproducibilityBundle
+    )
+    import json
+    
+    db = get_session_factory()()
+    exp = db.query(ExperimentRow).filter(ExperimentRow.experiment_id == experiment_id).first()
+    if not exp:
+        typer.echo(f"[ERROR] Experiment '{experiment_id}' not found in registry", err=True)
+        raise typer.Exit(1)
+
+    try:
+        spec = ExperimentSpec.model_validate(json.loads(exp.config_json))
+        run_rows = db.query(RunRow).filter(RunRow.experiment_id == experiment_id).all()
+        
+        runs_list = []
+        for r in run_rows:
+            # Query scale_n via query -> world association
+            scale_n = 50
+            q_row = db.query(QueryRow).filter(QueryRow.query_id == r.query_id).first()
+            if q_row:
+                w_row = db.query(WorldRow).filter(WorldRow.world_id == q_row.world_id).first()
+                if w_row:
+                    scale_n = w_row.scale_n
+
+            runs_list.append({
+                "run_id": r.run_id,
+                "is_correct": r.is_correct,
+                "loss": r.loss,
+                "latency_ms": r.latency_ms,
+                "pipeline_id": r.pipeline_id,
+                "provider_id": r.provider_id,
+                "policy_decision": r.policy_decision,
+                "answer": r.answer,
+                "status": r.status,
+                "scale_n": scale_n
+            })
+
+        metrics = MetricsComputer.compute_all(runs_list)
+        typer.echo(f"--- Summary statistics: {experiment_id} ---")
+        typer.echo(f"Completed runs: {metrics.sample_count}")
+        typer.echo(f"Overall Accuracy: {metrics.accuracy:.1%}")
+        typer.echo(f"Selective Risk: {metrics.selective_risk:.3f}")
+        typer.echo(f"False Certification: {metrics.false_certification_rate:.1%}")
+
+        # Compile SVG/PNG figures
+        out_root = Path(spec.output_root) / experiment_id
+        fig_gen = FigureGenerator(runs_list, out_root)
+        figs = fig_gen.generate_all()
+        typer.echo(f"[SUCCESS] Generated {len(figs)} publication figures in: {out_root}")
+
+        # Compile HTML/MD Reports
+        report_gen = ReportGenerator(experiment_id, spec.model_dump(), metrics.model_dump())
+        md_p, html_p = report_gen.generate(out_root)
+        typer.echo(f"[SUCCESS] Report written: {md_p.name} / {html_p.name}")
+
+        # Export bundle
+        metrics_df = pd.DataFrame(runs_list)
+        bundle_path = ReproducibilityBundle.export_bundle(experiment_id, spec.model_dump(), metrics_df, out_root)
+        typer.echo(f"[SUCCESS] Exported reproducibility bundle to: {bundle_path}")
+
+    except Exception as e:
+        typer.echo(f"[ERROR] Summarize failed: {e}", err=True)
+        raise typer.Exit(1)
 
 
 # =============================================================================

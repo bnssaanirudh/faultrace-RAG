@@ -17,7 +17,7 @@ By systematically replacing each component with a deterministic oracle, the syst
 
 ---
 
-## System Components (Current: Prompt 1 / ~30%)
+## System Components (Current: Prompt 6 / ~79%)
 
 | Component | Status |
 |-----------|--------|
@@ -28,10 +28,10 @@ By systematically replacing each component with a deterministic oracle, the syst
 | Deterministic baseline pipeline (P0) | IMPLEMENTED |
 | FastAPI service | IMPLEMENTED |
 | Next.js dashboard | IMPLEMENTED |
-| Real LLM providers (P1-P5) | NOT YET |
-| Oracle replacement lattice | NOT YET |
-| Counterfactual attribution scores | NOT YET |
-| Coverage certificates (full) | NOT YET |
+| Real LLM providers (P1-P5) | IMPLEMENTED |
+| Oracle replacement lattice | IMPLEMENTED |
+| Counterfactual attribution scores | IMPLEMENTED |
+| Coverage certificates (full) | IMPLEMENTED |
 | Paper-level experiment sweeps | NOT YET |
 
 ---
@@ -103,9 +103,9 @@ make smoke       # end-to-end smoke path
 
 ---
 
-## Current Milestone: Prompt 1
+## Current Milestone: Prompt 6
 
-Implements deterministic Track M data generation, procedural query factory, dual gold engine, deterministic baseline pipeline (P0-deterministic-scope-baseline), FastAPI service, and a functional Next.js research dashboard. No real LLM is used; all computation is deterministic.
+Implements deterministic Track M data generation, procedural query factory, dual gold engine, deterministic baseline pipeline (P0), real LLM providers (P1-P5), Map-Extract-Reduce compound systems, exact Counterfactual Attribution Engine (Shapley), and Selective Prediction Certification Engine. All computational components, backends, and metrics are fully built and verified. Next step is wiring Dashboards and Visualization (Prompt 7).
 
 ---
 

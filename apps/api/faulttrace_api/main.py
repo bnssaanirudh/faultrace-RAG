@@ -88,7 +88,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     from faulttrace_api.routes import health, system, worlds, queries, gold, runs, demo, artifacts
-    from faulttrace_api.routes import datasets, query_packs, disagreements, providers, policies
+    from faulttrace_api.routes import datasets, query_packs, disagreements, providers, policies, experiments
 
     app.include_router(health.router, prefix="/api/v1", tags=["Health"])
     app.include_router(system.router, prefix="/api/v1", tags=["System"])
@@ -104,6 +104,7 @@ def create_app() -> FastAPI:
     app.include_router(disagreements.router, prefix="/api/v1", tags=["Disagreements"])
     app.include_router(providers.router, prefix="/api/v1", tags=["Providers"])
     app.include_router(policies.router, prefix="/api/v1", tags=["Policies"])
+    app.include_router(experiments.router, prefix="/api/v1", tags=["Experiments"])
 
     return app
 

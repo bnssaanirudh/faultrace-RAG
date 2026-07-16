@@ -1,7 +1,10 @@
 pyproject.toml
 faulttrace_core/__init__.py
+faulttrace_core/extraction.py
+faulttrace_core/llm.py
 faulttrace_core/models.py
 faulttrace_core/predicates.py
+faulttrace_core/retrieval.py
 faulttrace_core/schemas.py
 faulttrace_core.egg-info/PKG-INFO
 faulttrace_core.egg-info/SOURCES.txt

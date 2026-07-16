@@ -172,4 +172,50 @@ export const api = {
   },
   getRun: (id: string) => apiFetch<Run>(`/runs/${id}`),
   getRunTrace: (id: string) => apiFetch<TraceEvent[]>(`/runs/${id}/trace`),
+  getRunAttribution: (id: string) => apiFetch<any>(`/runs/${id}/attribution`),
+  getRunCertificate: (id: string) => apiFetch<any>(`/runs/${id}/certificate`),
+  batchEvaluatePolicy: (policyId = 'strict_exact_v1') =>
+    apiFetch<any>(`/runs/batch-evaluate-policy?policy_id=${policyId}`),
+
+  // Policies
+  listPolicies: () => apiFetch<any[]>('/policies'),
+  getPolicy: (id: string) => apiFetch<any>(`/policies/${id}`),
+
+  // Datasets
+  listDatasets: (datasetId?: string, activeOnly = true) => {
+    const params = new URLSearchParams({ active_only: String(activeOnly) });
+    if (datasetId) params.set('dataset_id', datasetId);
+    return apiFetch<{ count: number; snapshots: any[] }>(`/datasets?${params}`);
+  },
+  getDatasetSnapshot: (snapshotId: string) => apiFetch<any>(`/datasets/${snapshotId}`),
+  validateDatasetSnapshot: (snapshotId: string) => apiFetch<any>(`/datasets/${snapshotId}/validate`),
+  getDatasetMissingness: (snapshotId: string) => apiFetch<any>(`/datasets/${snapshotId}/missingness`),
+  ingestDataset: (inputPath: string, datasetId: string, licenseNote = "", maxBytesMb = 500) =>
+    apiFetch<any>('/datasets/ingest', {
+      method: 'POST',
+      body: JSON.stringify({ input_path: inputPath, dataset_id: datasetId, license_note: licenseNote, max_bytes_mb: maxBytesMb }),
+    }),
+
+  // Experiments
+  planExperiment: (spec: any) =>
+    apiFetch<any>('/experiments/plan', {
+      method: 'POST',
+      body: JSON.stringify(spec),
+    }),
+  runExperiment: (spec: any) =>
+    apiFetch<any>('/experiments/run', {
+      method: 'POST',
+      body: JSON.stringify(spec),
+    }),
+  listExperiments: () => apiFetch<any>('/experiments'),
+  getExperiment: (id: string) => apiFetch<any>(`/experiments/${id}`),
+  cancelExperiment: (id: string) =>
+    apiFetch<any>(`/experiments/${id}/cancel`, {
+      method: 'POST',
+    }),
+  compareExperiments: (id1: string, id2: string) =>
+    apiFetch<any>('/experiments/compare', {
+      method: 'POST',
+      body: JSON.stringify({ experiment_id_1: id1, experiment_id_2: id2 }),
+    }),
 };
