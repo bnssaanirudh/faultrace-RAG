@@ -13,7 +13,16 @@
     }
   ],
   "headers": [],
-  "dynamicRoutes": [],
+  "dynamicRoutes": [
+    {
+      "page": "/runs/[id]/trace",
+      "regex": "^/runs/([^/]+?)/trace(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/runs/(?<nxtPid>[^/]+?)/trace(?:/)?$"
+    }
+  ],
   "staticRoutes": [
     {
       "page": "/",
@@ -28,10 +37,58 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/annotations",
+      "regex": "^/annotations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/annotations(?:/)?$"
+    },
+    {
+      "page": "/certificates",
+      "regex": "^/certificates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/certificates(?:/)?$"
+    },
+    {
+      "page": "/datasets",
+      "regex": "^/datasets(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/datasets(?:/)?$"
+    },
+    {
+      "page": "/experiments",
+      "regex": "^/experiments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/experiments(?:/)?$"
+    },
+    {
+      "page": "/leaderboard",
+      "regex": "^/leaderboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/leaderboard(?:/)?$"
+    },
+    {
+      "page": "/oracle",
+      "regex": "^/oracle(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/oracle(?:/)?$"
+    },
+    {
       "page": "/queries",
       "regex": "^/queries(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/queries(?:/)?$"
+    },
+    {
+      "page": "/reports",
+      "regex": "^/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reports(?:/)?$"
+    },
+    {
+      "page": "/run-lab",
+      "regex": "^/run\\-lab(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/run\\-lab(?:/)?$"
     },
     {
       "page": "/runs",

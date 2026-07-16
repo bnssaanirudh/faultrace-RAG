@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 .venv/
 __pycache__/
 *.pyc
@@ -9,4 +9,6 @@ test_tmp/
 artifacts/
 .DS_Store
 .env
-
+.next/
+data/
+*.egg-info/

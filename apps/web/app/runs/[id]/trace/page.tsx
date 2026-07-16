@@ -4,6 +4,7 @@ export const metadata = {
   title: "Run Trace & Attribution - FaultTrace RAG",
 };
 
-export default function Page({ params }: { params: { id: string } }) {
-  return <TracePage runId={params.id} />;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <TracePage runId={id} />;
 }

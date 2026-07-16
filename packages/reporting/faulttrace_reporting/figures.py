@@ -214,9 +214,11 @@ class FigureGenerator:
 
     def _plot_attribution_distributions(self, df: pd.DataFrame) -> str:
         # Boxplot of simulated R/E/A attributions
+        svg_path = self.out_dir / "attribution_dist.svg"
         fig, ax = plt.subplots(figsize=(6, 4))
         
-        # Mock attributions mapping P1 (r=0.8), P2 (e=0.8), P3 (a=0.8)
+        # In a real run, this would be computed from the Shapley matrix
+        # For the engineering demo, we show a deterministic placeholder distribution
         data = [
             [1.0, 0.8, 0.9, 1.0, 0.9],  # R
             [0.1, 0.0, 0.1, 0.0, 0.1],  # E
@@ -225,11 +227,11 @@ class FigureGenerator:
 
         ax.boxplot(data, tick_labels=["Scope R", "Extraction E", "Aggregation A"])
         ax.set_ylabel("Shapley Value Contribution")
-        ax.set_title("REA Component Error Distribution")
+        ax.set_title("REA Component Error Distribution [ENGINEERING DEMO]")
         ax.grid(True, axis="y", linestyle="--", alpha=0.5)
-
-        svg_path = self.output_dir / "attribution_distributions.svg"
-        png_path = self.output_dir / "attribution_distributions.png"
+        svg_path = self.output_dir / "attribution_dist.svg"
+        png_path = self.output_dir / "attribution_dist.png"
+        fig.tight_layout()
         fig.savefig(svg_path, format="svg", bbox_inches="tight")
         fig.savefig(png_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
@@ -252,7 +254,7 @@ class FigureGenerator:
 
         ax.set_xlabel("Corpus Scale N")
         ax.set_ylabel("Fault Share")
-        ax.set_title("Dominant Fault Origin by Scale")
+        ax.set_title("Dominant Fault Origin by Scale [ENGINEERING DEMO]")
         ax.legend()
         ax.grid(True, axis="y", linestyle="--", alpha=0.5)
 

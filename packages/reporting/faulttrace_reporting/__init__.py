@@ -7,6 +7,7 @@ from faulttrace_reporting.stats import compute_paired_bootstrap_ci, holm_bonferr
 from faulttrace_reporting.figures import FigureGenerator
 from faulttrace_reporting.reports import ReportGenerator
 from faulttrace_reporting.bundles import ReproducibilityBundle
+from faulttrace_reporting.generate_ablations import generate_locked_ablations
 
 __all__ = [
     "MetricsComputer",
@@ -19,4 +20,5 @@ __all__ = [
     "FigureGenerator",
     "ReportGenerator",
     "ReproducibilityBundle",
+    "generate_locked_ablations",
 ]

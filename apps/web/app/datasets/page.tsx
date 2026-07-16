@@ -91,7 +91,7 @@ export default function DatasetsPage() {
         </div>
         <h1 className="text-3xl font-bold text-white">Datasets Provenance</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Inspect, validate, and ingest Amazon-style corpus reviews into canonical Parquet schemas.
+          Inspect, validate, and ingest Amazon-style reviews or SEC EDGAR XBRL corpuses into canonical Parquet schemas.
         </p>
       </div>
 

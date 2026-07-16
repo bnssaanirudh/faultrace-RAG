@@ -182,7 +182,8 @@ class ResumableMatrixRunner:
         est_cost_usd = 0.0
 
         for job in jobs:
-            is_llm = not job.pipeline_id.includes("deterministic") and not job.pipeline_id.includes("P0")
+            # Estimate tokens & cost
+            is_llm = "deterministic" not in job.pipeline_id and "P0" not in job.pipeline_id
             if is_llm:
                 est_tokens_in += 1500
                 est_tokens_out += 350

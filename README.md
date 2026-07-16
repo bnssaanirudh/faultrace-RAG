@@ -17,7 +17,7 @@ By systematically replacing each component with a deterministic oracle, the syst
 
 ---
 
-## System Components (Current: Prompt 6 / ~79%)
+## System Components (Current: Prompt 10 - Final Release Candidate)
 
 | Component | Status |
 |-----------|--------|
@@ -32,7 +32,10 @@ By systematically replacing each component with a deterministic oracle, the syst
 | Oracle replacement lattice | IMPLEMENTED |
 | Counterfactual attribution scores | IMPLEMENTED |
 | Coverage certificates (full) | IMPLEMENTED |
-| Paper-level experiment sweeps | NOT YET |
+| Interactive Visualizations (Prompt 7) | IMPLEMENTED |
+| Experiment Specification (Prompt 8) | IMPLEMENTED |
+| Track T & Security Governance (Prompt 9) | IMPLEMENTED |
+| CLI & Final Release Polish (Prompt 10) | IN PROGRESS |
 
 ---
 
@@ -53,7 +56,7 @@ cd faulttrace-rag
 python -m venv .venv
 .venv\Scripts\activate      # Windows
 pip install -r requirements.txt -r requirements-dev.txt
-pip install -e packages/core -e packages/data -e packages/gold -e packages/pipelines -e packages/reporting
+pip install -e .
 
 # Frontend setup
 cd apps/web
@@ -103,9 +106,17 @@ make smoke       # end-to-end smoke path
 
 ---
 
-## Current Milestone: Prompt 6
+## Current Milestone: Prompt 10 (Final Release)
 
-Implements deterministic Track M data generation, procedural query factory, dual gold engine, deterministic baseline pipeline (P0), real LLM providers (P1-P5), Map-Extract-Reduce compound systems, exact Counterfactual Attribution Engine (Shapley), and Selective Prediction Certification Engine. All computational components, backends, and metrics are fully built and verified. Next step is wiring Dashboards and Visualization (Prompt 7).
+We have successfully implemented Prompts 1 through 9, bringing the system to ~96% completion. The system currently features:
+- Track M deterministic data generation and the dual gold evaluation engine.
+- Exact Counterfactual Attribution Engine (Shapley) and Selective Prediction Certification Engine.
+- Interactive trace inspector, pipeline comparison views, and comprehensive reporting.
+- YAML/JSON experiment specification and execution frameworks.
+- Track T human-annotation workflow (EDGAR/XBRL pilot).
+- Security hardening (CSP/HSTS) and comprehensive Audit Logging.
+
+We are currently working on **Prompt 10** (Final Release Engineer). Current goals include finalizing the repository-wide audit, completing the `faulttrace` CLI for hardware benchmarking, finalizing database migrations, hardening the API, building E2E tests, and exporting the final research package.
 
 ---
 

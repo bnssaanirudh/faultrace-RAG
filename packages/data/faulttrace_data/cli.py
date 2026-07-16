@@ -202,6 +202,46 @@ def summarize_experiment(experiment_id: str = typer.Argument(..., help="Experime
         raise typer.Exit(1)
 
 
+@experiment_app.command("generate-ablations")
+def generate_ablations(
+    output_dir: Path = typer.Option(Path("configs/experiments"), "--output-dir", help="Directory to save generated JSON configs")
+):
+    """Generate predefined locked ablation configs."""
+    from faulttrace_reporting import generate_locked_ablations
+    try:
+        paths = generate_locked_ablations(output_dir)
+        typer.echo(f"[SUCCESS] Generated {len(paths)} locked ablation configs in {output_dir}")
+        for p in paths:
+            typer.echo(f"  - {p.name}")
+    except Exception as e:
+        typer.echo(f"[ERROR] Failed to generate ablations: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@experiment_app.command("bundle-verify")
+def bundle_verify(
+    bundle_dir: Path = typer.Argument(..., help="Path to the reproducibility bundle directory to verify")
+):
+    """Verify integrity of a reproducibility bundle against its checksums."""
+    from faulttrace_reporting import ReproducibilityBundle
+    if not bundle_dir.exists() or not bundle_dir.is_dir():
+        typer.echo(f"[ERROR] Bundle directory not found: {bundle_dir}", err=True)
+        raise typer.Exit(1)
+
+    try:
+        is_valid, errors = ReproducibilityBundle.verify_bundle(bundle_dir)
+        if is_valid:
+            typer.echo(f"[SUCCESS] Bundle '{bundle_dir.name}' verified successfully. All checksums match.")
+        else:
+            typer.echo(f"[ERROR] Bundle '{bundle_dir.name}' failed verification:", err=True)
+            for err in errors:
+                typer.echo(f"  - {err}", err=True)
+            raise typer.Exit(1)
+    except Exception as e:
+        typer.echo(f"[ERROR] Verification process failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
 # =============================================================================
 # DATA COMMANDS
 # =============================================================================

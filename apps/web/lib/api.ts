@@ -218,4 +218,16 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ experiment_id_1: id1, experiment_id_2: id2 }),
     }),
+
+  // Annotations
+  listAnnotationTasks: () => apiFetch<any[]>('/annotations/tasks'),
+  assignAnnotationTask: (taskId: string, userId: string) =>
+    apiFetch<any>(`/annotations/assignments?task_id=${taskId}&user_id=${userId}`, {
+      method: 'POST',
+    }),
+  submitAnnotation: (assignmentId: string, result: any, timeSpent: number) =>
+    apiFetch<any>(`/annotations/assignments/${assignmentId}/submit?time_spent=${timeSpent}`, {
+      method: 'POST',
+      body: JSON.stringify(result),
+    }),
 };

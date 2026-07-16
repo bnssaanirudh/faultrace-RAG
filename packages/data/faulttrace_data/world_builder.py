@@ -565,6 +565,16 @@ def _compute_summary(df: pd.DataFrame) -> dict[str, Any]:
             "min": str(ts.min()),
             "max": str(ts.max()),
         }
+    if "cik" in df.columns:
+        stats["cik_count"] = int(df["cik"].nunique())
+    if "tag" in df.columns:
+        stats["tag_counts"] = df["tag"].value_counts().to_dict()
+    if "filing_date" in df.columns:
+        ts = pd.to_datetime(df["filing_date"], utc=True, errors="coerce")
+        stats["filing_date_range"] = {
+            "min": str(ts.min()),
+            "max": str(ts.max()),
+        }
     return stats
 
 

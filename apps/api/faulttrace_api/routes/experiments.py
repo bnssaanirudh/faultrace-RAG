@@ -7,9 +7,12 @@ from __future__ import annotations
 import json
 import logging
 import threading
+import os
+from pathlib import Path
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -36,6 +39,10 @@ async def plan_experiment(spec: ExperimentSpec):
     try:
         runner = ResumableMatrixRunner(spec)
         plan = runner.dry_run()
+        
+        if plan.get("total_jobs", 0) > 10000:
+            raise HTTPException(status_code=400, detail="Matrix size exceeds the 10,000 job limit for security and budget constraints.")
+            
         return plan
     except Exception as e:
         raise HTTPException(status_code=422, detail=str(e))
@@ -45,6 +52,11 @@ async def run_experiment(spec: ExperimentSpec, background_tasks: BackgroundTasks
     try:
         runner = ResumableMatrixRunner(spec, db)
         config_hash = runner.config_hash
+        
+        # Security: Enforce hard cap
+        plan = runner.dry_run()
+        if plan.get("total_jobs", 0) > 10000:
+            raise HTTPException(status_code=400, detail="Matrix size exceeds the 10,000 job limit for security and budget constraints.")
         
         # Check if already running
         if _running_states.get(config_hash) == "running":
@@ -179,3 +191,18 @@ async def compare_experiments(request: CompareRequest, db: Session = Depends(get
             "cohens_d": effect_loss,
         }
     }
+
+@router.get("/experiments/{id}/download/{filename:path}", summary="Download artifact file")
+async def download_experiment_artifact(id: str, filename: str, db: Session = Depends(get_db)):
+    row = db.query(ExperimentRow).filter(ExperimentRow.experiment_id == id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Experiment not found")
+
+    config = json.loads(row.config_json)
+    output_root = Path(config.get("output_root", "artifacts/experiments"))
+    file_path = output_root / id / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {filename}")
+        
+    return FileResponse(path=str(file_path), filename=file_path.name)

@@ -18,6 +18,7 @@ from faulttrace_core.models import (
     ScopePredicate,
     TraceEvent,
 )
+from faulttrace_core.edgar_models import EdgarFact, EdgarCompanyFacts
 
 __all__ = [
     "AggregationSpec",
@@ -31,6 +32,8 @@ __all__ = [
     "QuerySpec",
     "ScopePredicate",
     "TraceEvent",
+    "EdgarFact",
+    "EdgarCompanyFacts",
 ]
 
 __version__ = "0.1.0"

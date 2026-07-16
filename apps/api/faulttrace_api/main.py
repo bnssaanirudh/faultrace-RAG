@@ -71,7 +71,27 @@ def create_app() -> FastAPI:
         duration_ms = (time.monotonic() - start) * 1000
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Duration-MS"] = f"{duration_ms:.1f}"
+        
+        # Security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        
         return response
+
+    from starlette.exceptions import HTTPException as StarletteHTTPException
+
+    @app.exception_handler(StarletteHTTPException)
+    async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": "http_error",
+                "message": str(exc.detail),
+                "request_id": getattr(request.state, "request_id", "unknown"),
+            },
+        )
 
     # Global error handler
     @app.exception_handler(Exception)
@@ -88,7 +108,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     from faulttrace_api.routes import health, system, worlds, queries, gold, runs, demo, artifacts
-    from faulttrace_api.routes import datasets, query_packs, disagreements, providers, policies, experiments
+    from faulttrace_api.routes import datasets, query_packs, disagreements, providers, policies, experiments, annotations, governance
 
     app.include_router(health.router, prefix="/api/v1", tags=["Health"])
     app.include_router(system.router, prefix="/api/v1", tags=["System"])
@@ -105,6 +125,8 @@ def create_app() -> FastAPI:
     app.include_router(providers.router, prefix="/api/v1", tags=["Providers"])
     app.include_router(policies.router, prefix="/api/v1", tags=["Policies"])
     app.include_router(experiments.router, prefix="/api/v1", tags=["Experiments"])
+    app.include_router(annotations.router, prefix="/api/v1", tags=["Annotations"])
+    app.include_router(governance.router, prefix="/api/v1", tags=["Governance"])
 
     return app
 

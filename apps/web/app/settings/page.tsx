@@ -121,6 +121,34 @@ export default function SettingsPage() {
           </div>
         </Card>
 
+        {/* Governance Controls */}
+        <Card className="md:col-span-2">
+          <div className="border-b border-white/[0.06] pb-3 mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              Data Governance & Audit
+            </h2>
+            <Badge variant="success">Active</Badge>
+          </div>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
+            <div>
+              <span className="font-semibold block mb-0.5 text-slate-300">Audit Logging Enabled</span>
+              <p className="text-[11px] text-slate-500 leading-relaxed max-w-xl">
+                Every API modification, matrix experiment, and manual Track T annotation is cryptographically logged to the system's AuditLog. You cannot disable this in Research Mode.
+              </p>
+            </div>
+            <a href="/api/v1/governance/audit" target="_blank" rel="noreferrer">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-emerald-400 hover:text-emerald-300 border border-emerald-500/25 px-4 py-2"
+              >
+                View Audit Log
+              </Button>
+            </a>
+          </div>
+        </Card>
+
         {/* Database Control & Reset */}
         <Card className="md:col-span-2 border-red-500/10 bg-red-500/[0.01]">
           <div className="border-b border-white/[0.06] pb-3 mb-4 flex items-center justify-between">

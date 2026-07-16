@@ -1,4 +1,4 @@
-// File: C:\Users\ADMIN\.gemini\antigravity\scratch\faulttrace-rag\apps\web\app\queries\page.tsx
+// File: C:\Users\aniru\Downloads\faultrace-RAG-main\apps\web\app\queries\page.tsx
 import * as entry from '../../../../app/queries/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

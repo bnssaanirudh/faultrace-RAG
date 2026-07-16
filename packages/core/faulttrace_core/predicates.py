@@ -46,6 +46,24 @@ ALLOWED_FIELDS: frozenset[str] = frozenset({
     "price",
     "text",
     "schema_version",
+    # EDGAR fields
+    "cik",
+    "accession_number",
+    "filing_date",
+    "form_type",
+    "fiscal_year",
+    "fiscal_period",
+    "tag",
+    "namespace",
+    "unit",
+    "value",
+    "decimals",
+    "start_date",
+    "end_date",
+    "segment_id",
+    "source_url",
+    "raw_payload_hash",
+    "canonical_fact_hash",
 })
 
 

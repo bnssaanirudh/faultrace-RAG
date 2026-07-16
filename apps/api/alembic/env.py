@@ -23,6 +23,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.resolve()))
 
 from apps.api.faulttrace_api.database import Base
+import faulttrace_core.models
+import faulttrace_core.annotations
+import faulttrace_core.governance
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -64,6 +64,25 @@ export default function ExperimentsPage() {
   const [comparisonResult, setComparisonResult] = useState<any | null>(null);
   const [comparing, setComparing] = useState(false);
 
+  // File upload handler
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const json = JSON.parse(evt.target?.result as string);
+        if (json.name) setExpName(json.name);
+        if (json.pipelines) setPipelinesList(json.pipelines.join(','));
+        if (json.scales) setScalesList(json.scales.join(','));
+        if (json.query_families) setFamiliesList(json.query_families.join(','));
+      } catch (err) {
+        setError('Invalid JSON config file');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   // Load active metrics & experiments
   async function loadCalibration() {
     setLoadingMetrics(true);
@@ -238,7 +257,7 @@ export default function ExperimentsPage() {
           </div>
           <h1 className="text-3xl font-bold text-white">Controlled Benchmarks</h1>
           <p className="mt-1 text-sm text-slate-400">
-            Define, compile, statistics-evaluate, and reproduce RAG analytics matrix sweeps.
+            Define, compile, statistics-evaluate, and reproduce RAG analytics matrix sweeps. Includes Track T / EDGAR Transfer evaluation.
           </p>
         </div>
 
@@ -381,6 +400,12 @@ export default function ExperimentsPage() {
             <Card>
               <div className="border-b border-white/[0.06] pb-3 mb-4 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-white">Create Matrix Experiment</h3>
+                <label className="cursor-pointer">
+                  <span className="text-xs text-orange-400 hover:text-orange-300 font-semibold underline underline-offset-4 decoration-orange-500/30 hover:decoration-orange-400">
+                    Upload Config JSON
+                  </span>
+                  <input type="file" accept=".json,.yaml,.yml" className="hidden" onChange={handleFileUpload} />
+                </label>
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -482,7 +507,13 @@ export default function ExperimentsPage() {
                         <td className="px-4 py-3 font-mono text-orange-400">{exp.experiment_id.slice(0, 16)}…</td>
                         <td className="px-4 py-3 capitalize">{exp.name}</td>
                         <td className="px-4 py-3">
-                          {exp.completed_jobs} / {exp.total_jobs}
+                          <div className="flex items-center gap-2">
+                            <span>{exp.completed_jobs} / {exp.total_jobs}</span>
+                            <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden w-16">
+                              <div className="h-full bg-orange-500 rounded-full" style={{ width: `${Math.min(100, Math.max(0, (exp.completed_jobs / (exp.total_jobs || 1)) * 100))}%` }} />
+                            </div>
+                          </div>
+                          {exp.failed_jobs > 0 && <div className="text-[9px] text-red-400 mt-0.5">{exp.failed_jobs} failed</div>}
                         </td>
                         <td className="px-4 py-3">
                           <Badge variant={exp.status === 'complete' ? 'success' : exp.status === 'running' ? 'warning' : 'neutral'}>
@@ -559,7 +590,7 @@ export default function ExperimentsPage() {
 
                   <div className="pt-3 border-t border-white/[0.06] flex flex-col gap-2">
                     <a
-                      href={`http://localhost:8000/api/v1/experiments/${selectedExp.experiment_id}`}
+                      href={`/api/v1/experiments/${selectedExp.experiment_id}`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -674,37 +705,98 @@ export default function ExperimentsPage() {
       {/* Tab 4: Figure Gallery */}
       {activeTab === 'gallery' && (
         <div className="space-y-6">
-          <div className="border-b border-white/[0.06] pb-3">
-            <h2 className="text-sm font-semibold text-white">Publication Figure Gallery</h2>
-            <p className="text-xs text-slate-500 mt-1">Displays vector-first exports compiled from complete matrices.</p>
+          <div className="border-b border-white/[0.06] pb-3 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                Publication Figure Gallery
+                {selectedExp && (
+                  <Badge variant={selectedExp.config?.tags?.includes('demo') ? 'neutral' : 'success'}>
+                    {selectedExp.config?.tags?.includes('demo') ? 'DEMO' : 'CLAIM-READY'}
+                  </Badge>
+                )}
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">Displays vector-first exports compiled from complete matrices.</p>
+            </div>
+            
+            {/* Download Links */}
+            {selectedExp && selectedExp.status === 'complete' && (
+              <div className="flex gap-2">
+                <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/bundle_${selectedExp.experiment_id}/metrics.csv`} download>
+                  <Button size="sm" variant="ghost" className="text-orange-400 hover:text-orange-300">
+                    <FileSpreadsheet className="w-3 h-3 mr-1" />
+                    CSV
+                  </Button>
+                </a>
+                <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/report.html`} download>
+                  <Button size="sm" variant="ghost" className="text-orange-400 hover:text-orange-300">
+                    <Activity className="w-3 h-3 mr-1" />
+                    HTML Report
+                  </Button>
+                </a>
+                <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/bundle_${selectedExp.experiment_id}/checksums.txt`} download>
+                  <Button size="sm" variant="primary" className="bg-orange-600 hover:bg-orange-700 text-white">
+                    <Download className="w-3 h-3 mr-1" />
+                    Verify Manifest
+                  </Button>
+                </a>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
-              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2">1. Accuracy vs log corpus size</h3>
-              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs">
-                <span>[Vector SVG accuracy_vs_scale.svg]</span>
+              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2 flex items-center justify-between">
+                1. Accuracy vs log corpus size
+                {selectedExp && <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/accuracy_vs_scale.svg`} className="text-slate-500 hover:text-white" download><Download className="w-3 h-3" /></a>}
+              </h3>
+              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs relative overflow-hidden group">
+                {selectedExp && selectedExp.status === 'complete' ? (
+                  <img src={`/api/v1/experiments/${selectedExp.experiment_id}/download/accuracy_vs_scale.svg`} className="w-full h-full object-contain p-2" alt="Accuracy vs Scale" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span>[Vector SVG accuracy_vs_scale.svg]</span>
+                )}
               </div>
             </Card>
 
             <Card>
-              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2">2. Normalized loss versus scale</h3>
-              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs">
-                <span>[Vector SVG loss_vs_scale.svg]</span>
+              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2 flex items-center justify-between">
+                2. Normalized loss versus scale
+                {selectedExp && <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/loss_vs_scale.svg`} className="text-slate-500 hover:text-white" download><Download className="w-3 h-3" /></a>}
+              </h3>
+              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs relative overflow-hidden group">
+                {selectedExp && selectedExp.status === 'complete' ? (
+                  <img src={`/api/v1/experiments/${selectedExp.experiment_id}/download/loss_vs_scale.svg`} className="w-full h-full object-contain p-2" alt="Loss vs Scale" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span>[Vector SVG loss_vs_scale.svg]</span>
+                )}
               </div>
             </Card>
 
             <Card>
-              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2">3. Weighted coverage versus error</h3>
-              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs">
-                <span>[Vector SVG coverage_vs_error.svg]</span>
+              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2 flex items-center justify-between">
+                3. Weighted coverage versus error
+                {selectedExp && <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/coverage_vs_error.svg`} className="text-slate-500 hover:text-white" download><Download className="w-3 h-3" /></a>}
+              </h3>
+              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs relative overflow-hidden group">
+                {selectedExp && selectedExp.status === 'complete' ? (
+                  <img src={`/api/v1/experiments/${selectedExp.experiment_id}/download/coverage_vs_error.svg`} className="w-full h-full object-contain p-2" alt="Coverage vs Error" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span>[Vector SVG coverage_vs_error.svg]</span>
+                )}
               </div>
             </Card>
 
             <Card>
-              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2">4. P4 versus P5 repair benefit</h3>
-              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs">
-                <span>[Vector SVG p4_p5_repair_benefit.svg]</span>
+              <h3 className="text-xs font-bold text-orange-400 uppercase mb-2 flex items-center justify-between">
+                4. P4 versus P5 repair benefit
+                {selectedExp && <a href={`/api/v1/experiments/${selectedExp.experiment_id}/download/p4_p5_repair_benefit.svg`} className="text-slate-500 hover:text-white" download><Download className="w-3 h-3" /></a>}
+              </h3>
+              <div className="aspect-[3/2] w-full rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-slate-600 text-xs relative overflow-hidden group">
+                {selectedExp && selectedExp.status === 'complete' ? (
+                  <img src={`/api/v1/experiments/${selectedExp.experiment_id}/download/p4_p5_repair_benefit.svg`} className="w-full h-full object-contain p-2" alt="P4 vs P5 Repair Benefit" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span>[Vector SVG p4_p5_repair_benefit.svg]</span>
+                )}
               </div>
             </Card>
           </div>

@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\ADMIN\\.gemini\\antigravity\\scratch\\faulttrace-rag\\apps\\web",
+    "outputFileTracingRoot": "C:\\Users\\aniru\\Downloads\\faultrace-RAG-main\\apps\\web",
     "experimental": {
       "nodeMiddleware": false,
       "cacheLife": {
@@ -154,7 +154,7 @@
       "middlewarePrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 7,
+      "cpus": 11,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -279,7 +279,7 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
     "turbopack": {
-      "root": "C:\\Users\\ADMIN\\.gemini\\antigravity\\scratch\\faulttrace-rag\\apps\\web"
+      "root": "C:\\Users\\aniru\\Downloads\\faultrace-RAG-main\\apps\\web"
     },
     "_originalRewrites": {
       "beforeFiles": [],
@@ -292,7 +292,7 @@
       "fallback": []
     }
   },
-  "appDir": "C:\\Users\\ADMIN\\.gemini\\antigravity\\scratch\\faulttrace-rag\\apps\\web",
+  "appDir": "C:\\Users\\aniru\\Downloads\\faultrace-RAG-main\\apps\\web",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

@@ -141,7 +141,6 @@ def get_engine(db_url: Optional[str] = None):
     global _engine
     if db_url:
         engine = create_engine(db_url, connect_args={"check_same_thread": False})
-        Base.metadata.create_all(engine)
         return engine
     if _engine is None:
         settings = get_settings()
@@ -171,6 +170,6 @@ def get_db():
 
 
 def init_db():
-    """Create all tables if they don't exist."""
+    """Create all tables if they don't exist. Now delegated to Alembic."""
     engine = get_engine()
-    Base.metadata.create_all(engine)
+    # Base.metadata.create_all(engine)
