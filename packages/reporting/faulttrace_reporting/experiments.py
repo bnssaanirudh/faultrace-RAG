@@ -132,7 +132,7 @@ class ResumableMatrixRunner:
             # Parse spec to verify difficulty
             try:
                 spec_dict = json.loads(q_row.spec_json)
-                difficulty = spec_dict.get("difficulty", "easy")
+                difficulty = spec_dict.get("difficulty") or "easy"
             except Exception:
                 difficulty = "easy"
 

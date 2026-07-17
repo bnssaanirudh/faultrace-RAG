@@ -7,7 +7,7 @@
   "row_count": 10,
   "parquet_path": "data\\generated\\worlds\\world_s42_n10\\records.parquet",
   "jsonl_path": "data\\generated\\worlds\\world_s42_n10\\records.jsonl",
-  "parquet_hash": "527c92f4b03d81233190ddc0396265a8",
+  "parquet_hash": "f4c1e87874b08168b6adca046babc0f9",
   "jsonl_hash": "54a229773d5ddeb334c7fc40182570ad",
   "summary_stats": {
     "total_records": 10,
@@ -36,5 +36,5 @@
     }
   },
   "parent_world_id": null,
-  "created_at": "2026-07-17T09:22:14.893753+00:00"
+  "created_at": "2026-07-17T11:45:54.860852+00:00"
 }
