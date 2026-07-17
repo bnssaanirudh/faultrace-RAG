@@ -20,11 +20,12 @@ By systematically replacing each component with a deterministic oracle (using ou
 ## ✨ Key Features
 
 - **Counterfactual Attribution Engine:** Pinpoints exactly where an LLM failed using Shapley values across Retrieval, Extraction, and Aggregation stages.
-- **Dual Gold Evaluation Engine:** Verifies ground-truth query answers against deterministic Pandas and DuckDB evaluations.
-- **Selective Prediction Certification:** Issues mathematical coverage certificates indicating whether an LLM's answer is trustable.
-- **Track M Synthetic Corpus Generator:** Instantly spins up realistic Amazon-review-style e-commerce worlds to test capabilities at scale.
+- **Dual Gold Evaluation Engine:** Verifies ground-truth query answers against deterministic Pandas and DuckDB evaluations (100% parity validated).
+- **Selective Prediction Certification:** Issues mathematical coverage certificates indicating whether an LLM's answer is trustable based on lexical ambiguity and trace evidence.
+- **Advanced Graph Neural Extraction (GNN):** Parses structural scientific corpora (e.g. Springer ToC) into localized knowledge graphs using `torch_geometric`.
+- **Multi-Track Synthetic Corpora:** Includes full synthetic data pipelines for Amazon Reviews (Track M) and Semantic Geoparsing (Track T).
 - **Interactive Next.js Trace Inspector:** Deep dive into LLM context chunks, extraction traces, and tie-breaking policies.
-- **Experiment Runner & Hardware Benchmarking:** Run YAML-based specification experiments and automatically benchmark token/latency metrics.
+- **Experiment Runner & R Diagnostics:** Run YAML-based specification sweeps and automatically output academic publication plots (accuracy-degradation, Shapley bootstraps) using `ggplot2` and `boot`.
 - **Enterprise Security:** Hardened FastAPI backend with CORS, CSP, HSTS, rate-limiting, and path-traversal prevention.
 
 ## 🏗️ Architecture
@@ -107,9 +108,14 @@ make smoke       # Playwright End-to-End browser tests
 To benchmark hardware runs and generate academic figures (SVGs and CSVs with watermarks):
 
 ```bash
-# Generates figures in the `reports/` folder
-python scripts/benchmark_runs.py
-make generate-figures
+# Sweep experiments across datasets (Amazon, Springer)
+python scripts/sweep_attribution.py
+python scripts/sweep_springer_oracle.py
+python scripts/run_track_t.py
+
+# Generates diagnostic R figures in the `artifacts/figures/` folder
+Rscript scripts/generate_plots.R
+Rscript scripts/compute_bootstrap_ci.R
 ```
 
 ## 📚 Documentation
