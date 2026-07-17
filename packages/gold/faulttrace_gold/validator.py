@@ -8,6 +8,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
@@ -61,6 +62,11 @@ def _results_agree(
             return False
         return all(_results_agree(a[k], b[k], tolerance) for k in a)
     # String/categorical comparison
+    # Handle Enum instances to match raw string outputs from duckdb
+    if isinstance(a, Enum):
+        a = a.value
+    if isinstance(b, Enum):
+        b = b.value
     return str(a) == str(b)
 
 
