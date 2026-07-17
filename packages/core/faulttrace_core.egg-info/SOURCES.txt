@@ -1,6 +1,10 @@
 pyproject.toml
 faulttrace_core/__init__.py
+faulttrace_core/annotations.py
+faulttrace_core/cli.py
+faulttrace_core/edgar_models.py
 faulttrace_core/extraction.py
+faulttrace_core/governance.py
 faulttrace_core/llm.py
 faulttrace_core/models.py
 faulttrace_core/predicates.py

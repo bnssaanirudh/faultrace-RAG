@@ -133,7 +133,10 @@ export const api = {
     }),
 
   // Worlds
-  listWorlds: () => apiFetch<World[]>('/worlds'),
+  listWorlds: async () => {
+    const res = await apiFetch<PaginatedResponse<World>>('/worlds');
+    return res.items;
+  },
   getWorld: (id: string) => apiFetch<World>(`/worlds/${id}`),
   listWorldRecords: (worldId: string, page = 1, pageSize = 50, filters?: Record<string, string>) => {
     const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });

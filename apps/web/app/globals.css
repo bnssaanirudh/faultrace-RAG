@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 
 @tailwind base;
 @tailwind components;
@@ -227,4 +228,107 @@
   .scrollbar-thin::-webkit-scrollbar { width: 4px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+}
+
+/* --- Marketing Site Styles --- */
+@layer utilities {
+  .type-heading-sp {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+  }
+
+  /* Fluid typography matching Spur */
+  .typef-heading-48-120 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(3rem, 1.5rem + 7.5vw, 7.5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .type-mono-1240 {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .type-mono-1040 {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+  
+  .type-mono {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  }
+
+  .text-neon {
+    color: #FF6A2B;
+  }
+  
+  .bg-neon {
+    background-color: #FF6A2B;
+  }
+
+  .scan-line-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #FF6A2B;
+    box-shadow: 0 0 10px #FF6A2B, 0 0 20px #FF6A2B;
+    animation: scan 4s linear infinite;
+    z-index: 10;
+  }
+
+  @keyframes scan {
+    0% { left: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 110%; opacity: 0; }
+  }
+
+  .trace-lattice {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Premium Micro-animations */
+  .gsap-slide-up {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .gsap-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-800 { animation-delay: 800ms; }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }

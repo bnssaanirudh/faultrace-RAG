@@ -1,8 +1,16 @@
 pyproject.toml
 faulttrace_reporting/__init__.py
+faulttrace_reporting/agreement.py
+faulttrace_reporting/bundles.py
+faulttrace_reporting/experiments.py
+faulttrace_reporting/figures.py
+faulttrace_reporting/generate_ablations.py
 faulttrace_reporting/metrics.py
+faulttrace_reporting/reports.py
+faulttrace_reporting/stats.py
 faulttrace_reporting.egg-info/PKG-INFO
 faulttrace_reporting.egg-info/SOURCES.txt
 faulttrace_reporting.egg-info/dependency_links.txt
 faulttrace_reporting.egg-info/requires.txt
 faulttrace_reporting.egg-info/top_level.txt
+tests/test_stats.py

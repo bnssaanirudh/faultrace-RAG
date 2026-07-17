@@ -6,6 +6,7 @@ faulttrace_pipelines/batch_attribution.py
 faulttrace_pipelines/cache.py
 faulttrace_pipelines/certification.py
 faulttrace_pipelines/coverage_adapters.py
+faulttrace_pipelines/edgar_query_factory.py
 faulttrace_pipelines/lattice.py
 faulttrace_pipelines/loss.py
 faulttrace_pipelines/p0_baseline.py

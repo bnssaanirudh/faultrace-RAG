@@ -49,11 +49,17 @@ module.exports = {
           coral: '#ff5f5f',
           violet: '#a855f7',
           cyan: '#22d3ee',
+          fault: '#FF6A2B',
+          verified: '#3B82F6',
         },
+        gunmetal: '#2C303A',
+        silver: '#B3B3B3',
+        platinum: '#E6E6E6',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        mono: ['IBM Plex Mono', 'JetBrains Mono', 'Fira Code', 'monospace'],
+        heading: ['Space Grotesk', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

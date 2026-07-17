@@ -1,11 +1,13 @@
-import { DashboardPage } from '@/app/(dashboard)/dashboard-page';
+import { LandingPage } from '@/components/marketing/LandingPage';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Dashboard — FaultTrace-RAG',
-  description: 'Overview of corpus worlds, query coverage, and pipeline runs.',
+  title: 'FaultTrace-RAG — When the answer is wrong, we tell you why.',
+  description:
+    'FaultTrace-RAG localizes failures in LLM analytics pipelines — Retrieval, Extraction, Aggregation — using oracle swaps and Shapley-style attribution.',
 };
 
 export default function Page() {
-  return <DashboardPage />;
+  return <LandingPage />;
 }
+

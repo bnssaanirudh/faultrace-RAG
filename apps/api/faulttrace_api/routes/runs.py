@@ -228,7 +228,7 @@ async def get_run_attribution(run_id: str, db: Session = Depends(get_db)):
     if not q_row:
         raise HTTPException(status_code=404, detail="Query not found")
     
-    from faulttrace_core.models import GoldAnswer, QuerySpec
+    from faulttrace_core.models import GoldAnswer, QuerySpec, PipelineRun
     from faulttrace_pipelines.attribution import CounterfactualAttributor
     
     settings = get_settings()
@@ -249,13 +249,24 @@ async def get_run_attribution(run_id: str, db: Session = Depends(get_db)):
         pipeline_answer = ast.literal_eval(raw)
     except Exception:
         pipeline_answer = raw
+        
+    parent_run = PipelineRun(
+        run_id=run_row.run_id,
+        query_id=run_row.query_id,
+        pipeline_id=run_row.pipeline_id,
+        provider_id=run_row.provider_id,
+        started_at=run_row.started_at,
+        completed_at=run_row.completed_at,
+        status=run_row.status,
+        answer=pipeline_answer,
+        gold_answer_value=run_row.gold_answer_value,
+        is_correct=run_row.is_correct
+    )
     
     attributor = CounterfactualAttributor()
     result = attributor.attribute(
-        run_id=run_id,
+        parent_run=parent_run,
         query=query_spec,
-        pipeline_id=run_row.pipeline_id,
-        pipeline_answer=pipeline_answer,
         gold_answer_obj=gold,
         oracle_df=df,
     )

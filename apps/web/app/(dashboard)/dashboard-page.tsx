@@ -65,8 +65,8 @@ export function DashboardPage() {
         api.listRuns(undefined, undefined, 1, 10),
       ]);
       setStatus(s);
-      setWorlds(w);
-      setRecentRuns(r.items);
+      setWorlds(Array.isArray(w) ? w : (w as any).items || []);
+      setRecentRuns(r.items || []);
     } catch (e: unknown) {
       setError((e as Error).message);
     } finally {
