@@ -23,7 +23,7 @@ const navSections = [
   {
     label: 'Research',
     items: [
-      { href: '/',            label: 'Overview',        icon: Gauge },
+      { href: '/dashboard',   label: 'Overview',        icon: Gauge },
       { href: '/datasets',    label: 'Datasets',        icon: Database },
       { href: '/worlds',      label: 'Corpus Worlds',   icon: Globe },
       { href: '/queries',     label: 'Query Library',   icon: HelpCircle },

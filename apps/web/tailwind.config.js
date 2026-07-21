@@ -55,6 +55,15 @@ module.exports = {
         gunmetal: '#2C303A',
         silver: '#B3B3B3',
         platinum: '#E6E6E6',
+        theme: {
+          bg: 'var(--theme-bg)',
+          'bg-secondary': 'var(--theme-bg-secondary)',
+          accent: 'var(--theme-accent)',
+        },
+        black: 'var(--theme-bg)',
+        zinc: {
+          950: 'var(--theme-bg-secondary)'
+        }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -78,7 +87,7 @@ module.exports = {
         shimmer: { '0%': { backgroundPosition: '-1000px 0' }, '100%': { backgroundPosition: '1000px 0' } },
       },
       boxShadow: {
-        'glow-brand': '0 0 24px 0 rgba(234, 88, 12, 0.30)',
+        'glow-brand': '0 0 24px 0 var(--theme-accent)',
         'glow-certified': '0 0 24px 0 rgba(13, 148, 136, 0.25)',
         'glow-gold': '0 0 24px 0 rgba(245, 200, 66, 0.20)',
         'glow-emerald': '0 0 24px 0 rgba(16, 217, 138, 0.20)',

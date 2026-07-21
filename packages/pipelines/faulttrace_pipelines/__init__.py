@@ -27,6 +27,7 @@ from faulttrace_pipelines.p5_certified_mer import P5CertifiedMERPipeline
 from faulttrace_pipelines.p1_direct_bm25 import P1DirectBM25Pipeline
 from faulttrace_pipelines.p2_direct_dense import P2DirectDensePipeline
 from faulttrace_pipelines.p3_extract_aggregate import P3ExtractAggregatePipeline
+from faulttrace_pipelines.gnn_extractor import GNNExtractorPipeline
 from faulttrace_pipelines.attribution import (
     CounterfactualAttributor,
     AttributionResult,
@@ -48,6 +49,7 @@ PIPELINE_REGISTRY: dict[str, type[AbstractPipeline]] = {
     "P3-extract-aggregate": P3ExtractAggregatePipeline,
     "P4-full-scope-mer": P4FullScopeMERPipeline,
     "P5-certified-mer-repair": P5CertifiedMERPipeline,
+    "gnn-extractor": GNNExtractorPipeline,
 }
 
 

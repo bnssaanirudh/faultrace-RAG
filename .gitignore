@@ -9,6 +9,7 @@ test_tmp/
 artifacts/
 .DS_Store
 .env
-.next/
+**/.next/
 data/
 *.egg-info/
+*.zip
